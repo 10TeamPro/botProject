@@ -4,7 +4,7 @@
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
-    "eslint-config-cryingbot": "^1.0.2",
+    "eslint-config-cryingbot": "^1.0.3",
     "husky": "^8.0.0"
   },
   "scripts": {
