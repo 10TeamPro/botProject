@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@slack/rtm-api": "^6.0.0",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "eslint-config-cryingbot": "^1.0.3",
+    "husky": "^8.0.0"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  }
+}
