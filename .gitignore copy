@@ -1,0 +1,13 @@
+# Dependency directories
+node_modules/
+
+# 보안관련해서
+package-lock.json
+
+# 토큰(config)
+config/
+
+
+# husky 파일은 우선 공유
+#/.husky
+#/.prettier
