@@ -1,0 +1,14 @@
+name: mocha test
+
+
+on:
+  pull_request:
+  branches: [main, dev*, feat*]
+  
+jobs:
+  name: TEST ACTION
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+     - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+     - uses: stefanoeb/eslint-action@1.0.2
