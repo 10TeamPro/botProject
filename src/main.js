@@ -14,7 +14,7 @@ rtm.on('message', (message) => {
   const { channel } = message;
   const { text } = message;
 
-  if (!isNaN(text)) {
+  if (!Number.isNaN(Number(text))) {
     square(rtm, text, channel);
   } else {
     switch (text) {
