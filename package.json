@@ -6,12 +6,10 @@
   },
   "devDependencies": {
     "chai": "^4.3.7",
-    "eslint-config-cryingbot": "^1.0.3",
-    "husky": "^8.0.0",
-    "mocha": "^10.1.0"
+    "eslint-config-cryingbot": "^1.0.4",
+    "husky": "^8.0.0"
   },
   "scripts": {
-    "prepare": "husky install",
-    "test": "mocha"
+    "prepare": "husky install"
   }
 }

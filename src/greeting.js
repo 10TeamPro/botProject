@@ -1,7 +1,5 @@
-const greeting = (rtm, channel) => {
-  /* eslint-disable no-console */
+const greeting = function (rtm, channel) {
   console.log('Greeting Here');
-  /* eslint-enable no-console */
   rtm.sendMessage('HIHIHIHIHIHIHIHIHIHII', channel);
 };
 
