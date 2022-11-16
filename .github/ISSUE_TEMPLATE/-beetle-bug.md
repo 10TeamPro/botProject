@@ -1,5 +1,5 @@
 ---
-name: ":beetle: BUG"
+name: ":beetle:BUG"
 about: BUG 발생시 작성해주세요
 title: "[BUG]"
 labels: bug
@@ -7,19 +7,19 @@ assignees: ''
 
 ---
 
-**Issue: Bug**
+## Issue: Bug
 버그 발생 상황을 입력해주세요.
 
-**Description**
+## Description
 설명을 작성해주세요.
 
-**ToDo**
+## ToDo
 [ ] todo
 [ ] todo
 
-**ETC**
+## ETC
 기타사항
 
-**Desktop 환경**
+## Desktop 환경 
  - OS: [e.g. iOS]
  - Version [e.g. 22]
