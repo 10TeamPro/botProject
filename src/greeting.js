@@ -1,6 +1,6 @@
 const greeting = function (rtm, channel) {
   console.log('Greeting Here');
-  rtm.sendMessage('HIHIHIHIHIHIHIHIHIHII', channel);
+  return rtm.sendMessage('Hello?', channel);
 };
 
 module.exports = greeting;
