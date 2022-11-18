@@ -1,4 +1,4 @@
-featureE test
+name: featureE test
 
 on:
   push:
