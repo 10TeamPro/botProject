@@ -1,4 +1,4 @@
-featureJ test
+name: featureJ test
 
 on:
   push:
