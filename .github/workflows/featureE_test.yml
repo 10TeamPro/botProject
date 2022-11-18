@@ -6,24 +6,25 @@ on:
 
 jobs:
   build:
-    runs-on:ubuntu-latest
+  
+    runs-on: ubuntu-latest
     
     strategy:
       matrix:
         node-version: [16.x, 18.x ]
         
-    step:
-    -uses: actions/checkout@v1
+    steps:
+    - uses: actions/checkout@v1
     
-    -name: Use Node.js${{matrix.node-version}}
-     uses: actions/setup-nodes@v2
-     with:
+    - name: Use Node.js${{matrix.node-version}}
+      uses: actions/setup-nodes@v2
+      with:
        node-version: ${{matrix.node-version}}
    
-    -name: npm install, build and test
-     run: |
-      npm install mocha -g
-      mocha featureETest.spec.js
+    - name: npm install, build and test
+      run: |
+        npm install mocha -g
+        mocha featureETest.spec.js
       
       env:
         CI: true
