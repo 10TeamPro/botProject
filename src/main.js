@@ -1,8 +1,15 @@
 require('dotenv').config();
 
 const { Bot } = require('./app');
-const token = require('../config/bot.json').Signing_SECRET;
+const token = require('../config/bot.json');
 
-Bot.start(token);
+const mainBot = new Bot(token.Signing_SECRET);
+const testBot = new Bot(token.TEST_TOKEN);
 
-Bot.listen('message');
+mainBot.start();
+
+mainBot.listen();
+
+testBot.start();
+
+testBot.listen();
