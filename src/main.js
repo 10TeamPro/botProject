@@ -1,15 +1,11 @@
 require('dotenv').config();
 
-const { Bot } = require('./app');
+const { SlackBot } = require('./bot/slackBot');
+const { TestBot } = require('./bot/testBot');
 const token = require('../config/bot.json');
 
-const mainBot = new Bot(token.Signing_SECRET);
-const testBot = new Bot(token.TEST_TOKEN);
+const mainBot = new SlackBot(token.MAIN_TOKEN);
+const testBot = new TestBot(token.TEST_TOKEN);
 
-mainBot.start();
-
-mainBot.listen();
-
-testBot.start();
-
-testBot.listen();
+mainBot.start().then(() => mainBot.listen());
+testBot.start().then(() => testBot.ready()).then(() => testBot.listen());
