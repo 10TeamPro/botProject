@@ -8,10 +8,16 @@ const schedule = (rtm, date, channel) =>
       || Number.isNaN(Number(day))
       || (month < 1 || month > 12)
       || (day < 1 || day > 31))
-      return [rtm.sendMessage('올바른 날짜를 입력하세요', channel), false];
+      return {
+        msg: rtm.sendMessage('올바른 날짜를 입력하세요', channel),
+        success: false
+      };
 
     console.log(`${date}의 스케쥴 일정표 출력`);
-    return [rtm.sendMessage('파일 좀 올려주세요', channel), true];
+    return {
+      msg: rtm.sendMessage('파일 좀 올려주세요', channel),
+      success: true
+    };
   }
 ;
 

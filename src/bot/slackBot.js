@@ -7,6 +7,27 @@ const { Bot } = require('./bot');
 
 class SlackBot extends Bot {
 
+  /** 멤버들의 id를 담을 hashset */
+  #userHash = new Set();
+
+  /** 유저가 봇이 존재하는 채널에서 처음 타이핑을 시작할 때 봇은 가이드를 줍니다. */
+  hiAndInfo() {
+    this.rtm.on('user_typing', async (event) => {
+      if (this.#userHash.has(event.user)) {
+        return;
+      }
+      const stringFormat =
+        `     안녕하세요? <@${event.user}>님\n
+       아래 메시지를 입력하시면 응답 가능합니다.\n
+      |                 hi\n 
+      |               학사일정\n
+      |             오늘 밥 뭐야\n 
+      |              (전공)학부 \n`;
+      this.#userHash.add(event.user);
+      await this.rtm.sendMessage(stringFormat, event.channel);
+    });
+  }
+
   listen() {
     // rtm.sendMessage()도 promise 반환하므로 async로 전환했습니다.
     this.rtm.on('message', async (message) => {
@@ -17,8 +38,8 @@ class SlackBot extends Bot {
           await this.send(text, channel);
         } else if (this.responseLevel === 2) {
           const result = schedule(this.rtm, text, channel);
-          await result[0];
-          if (result[1]) {
+          await result.msg;
+          if (result.success) {
             this.responseLevel = 1;
           }
         }
@@ -39,7 +60,7 @@ class SlackBot extends Bot {
           break;
         case '학사일정':
           // TODO: feature 2
-          instruction = this.rtm.sendMessage('날짜를 입력해주세요 ex) 12/25', channel);
+          instruction = this.requestDate(channel);
           this.responseLevel += 1;
           break;
         case '오늘 밥 뭐야':
@@ -57,6 +78,12 @@ class SlackBot extends Bot {
       else if (instruction === 'undefined') reject();
       else resolve(instruction);
     });
+  }
+
+  requestDate(channel) {
+    const stringFormat = '| 안내 받을 날짜를 입력해주세요 \n' +
+      '| 형식 : 월/일 (12/13)';
+    return this.rtm.sendMessage(stringFormat, channel);
   }
 }
 
