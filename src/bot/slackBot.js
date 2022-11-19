@@ -1,5 +1,7 @@
 const greeting = require('../greeting');
 const square = require('../square');
+const schedule = require('../schedule');
+const menu = require('../menu');
 const { Bot } = require('./bot');
 
 
@@ -11,7 +13,15 @@ class SlackBot extends Bot {
       const { channel, text } = message;
 
       try {
-        await this.send(text, channel);
+        if (this.responseLevel === 1) {
+          await this.send(text, channel);
+        } else if (this.responseLevel === 2) {
+          const result = schedule(this.rtm, text, channel);
+          await result[0];
+          if (result[1]) {
+            this.responseLevel = 1;
+          }
+        }
       } catch (e) {
         console.log(e);
       }
@@ -29,9 +39,12 @@ class SlackBot extends Bot {
           break;
         case '학사일정':
           // TODO: feature 2
+          instruction = this.rtm.sendMessage('날짜를 입력해주세요 ex) 12/25', channel);
+          this.responseLevel += 1;
           break;
         case '오늘 밥 뭐야':
           // TODO: feature 3
+          instruction = menu(this.rtm, new Date().getDay(), channel);
           break;
         case '*학부':
           // TODO: feature 4
