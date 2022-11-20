@@ -38,7 +38,7 @@ class TestBot extends Bot {
       if (user === MAIN_BOT_ID) {
         await this.check(text)
           .then((response) => this.test(response));
-      } else if (text === '테스트 시작') {
+      } else if (this.responseLevel === 1 && text === '테스트 시작') {
         await this.rtm.sendMessage('테스트 시작할게요.', PRIVATE_CHANNEL)
           .then(() => this.test(this.responseLevel));
       }

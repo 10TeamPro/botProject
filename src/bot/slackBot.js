@@ -37,8 +37,8 @@ class SlackBot extends Bot {
         if (this.responseLevel === 1) {
           await this.send(text, channel);
         } else if (this.responseLevel === 2) {
-          const result = schedule(this.rtm, text, channel);
-          await result.msg;
+          const result = schedule(text);
+          await this.rtm.sendMessage(result.msg, channel);
           if (result.success) {
             this.responseLevel = 1;
           }
