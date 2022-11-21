@@ -3,7 +3,8 @@ name: feature test
 on:
   pull_request:
     branches: [ develop ]
-
+    paths:
+      - "src/**"
 jobs:
   build:
   
