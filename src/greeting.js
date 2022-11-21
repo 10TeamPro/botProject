@@ -1,8 +1,12 @@
-const _ = require('lodash');
-
-const greeting = function (rtm, channel) {
-  const greetings = ['Have a good day', 'Good to see you!', 'Hello'];
-  const randomValue = _.sample(greetings);
+const greeting = (rtm, channel) => {
+  const greetings = [
+    "Hi. We're here to help",
+    'Good to see you!',
+    'Hi',
+  ];
+  const randomValue = Math.floor(
+    Math.random() * greetings.length
+  );
   rtm.sendMessage(randomValue, channel);
 };
 
