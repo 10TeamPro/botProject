@@ -1,5 +1,5 @@
 ---
-name: ":bookmark:FEATURE"
+name: FEATURE
 about: Feature 작업 사항을 입력해주세요
 title: "[Feature]"
 labels: ''
@@ -14,8 +14,8 @@ assignees: ''
 설명을 작성해주세요.
 
 ## ToDo
-[ ] todo
-[ ] todo
+- [ ] todo
+- [ ] todo
 
 ## ETC
 기타사항
