@@ -74,7 +74,6 @@ class SlackBot extends Bot {
           break;
         default:
           instruction = findOffice(text);
-          this.rtm.sendMessage(instruction, channel);
           break;
       }
       if (!Number.isNaN(Number(text)))
