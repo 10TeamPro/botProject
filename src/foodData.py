@@ -6,7 +6,7 @@ import requests
 
 base_url = "https://sobi.chonbuk.ac.kr/menu/week_menu.php"
 con = requests.get(base_url)
-con.encoding='EUC-KR'
+con.encoding='utf-8'
 soup = BeautifulSoup(con.content, 'lxml')
 
 infoTable = soup.find("table",{"class":"tblType03"})
@@ -19,5 +19,4 @@ for a in infoTable.find_all("tr"):
         infolist.append(info)
     infoPrint.append(infolist)
     
-print(con.encoding)
 print(infoPrint[1])
