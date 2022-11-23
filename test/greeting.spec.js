@@ -13,15 +13,18 @@ describe('인사 테스트', () => {
     const stub = sinon.stub(Math, 'random').returns(0 / 3);
     stub();
     assert.equal(greeting(), greetArray[0]);
+    Math.random.restore();
   });
   it('Case 1', () => {
     const stub = sinon.stub(Math, 'random').returns(1 / 3);
     stub();
     assert.equal(greeting(), greetArray[1]);
+    Math.random.restore();
   });
   it('Case 2', () => {
     const stub = sinon.stub(Math, 'random').returns(2 / 3);
     stub();
     assert.equal(greeting(), greetArray[2]);
+    Math.random.restore();
   });
 });
