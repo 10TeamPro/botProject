@@ -55,6 +55,12 @@ class SlackBot extends Bot {
     return new Promise((resolve, reject) => {
       let instruction;
 
+      const checkENG = /[a-zA-Z]/;
+
+      if (checkENG.test(text)) {
+        text = { ...text.toLowerCase() };
+      }
+
       switch (text) {
         case 'hi':
           instruction = greeting();
