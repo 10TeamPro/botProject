@@ -1,4 +1,4 @@
-const greeting = (rtm, channel) => {
+const greeting = () => {
   const greetings = [
     "Hi. We're here to help",
     'Good to see you!',
@@ -7,7 +7,7 @@ const greeting = (rtm, channel) => {
   const randomValue = Math.floor(
     Math.random() * greetings.length
   );
-  rtm.sendMessage(randomValue, channel);
+  return greetings[randomValue];
 };
 
 module.exports = greeting;

@@ -57,7 +57,7 @@ class SlackBot extends Bot {
 
       switch (text) {
         case 'hi':
-          instruction = greeting(this.rtm, channel);
+          instruction = greeting();
           break;
         case '학사일정':
           // TODO: feature 2
