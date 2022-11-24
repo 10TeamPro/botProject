@@ -24,7 +24,8 @@ jobs:
    
     - name: npm install, build and test
       run: |
-        npm ci
+        npm install mocha -g
+        npm i chai --save-dev
         mocha
       
       env:
