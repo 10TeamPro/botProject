@@ -54,10 +54,17 @@ class SlackBot extends Bot {
   send(text, channel) {
     return new Promise((resolve, reject) => {
       let instruction;
+      let sendText = text;
 
-      switch (text) {
+      const checkENG = /[a-zA-Z]/;
+
+      if (checkENG.test(sendText)) {
+        sendText = { ...sendText.toLowerCase() };
+      }
+
+      switch (sendText) {
         case 'hi':
-          instruction = greeting(this.rtm, channel);
+          instruction = greeting();
           break;
         case '학사일정':
           // TODO: feature 2
@@ -73,12 +80,11 @@ class SlackBot extends Bot {
           );
           break;
         default:
-          instruction = findOffice(text);
-          this.rtm.sendMessage(instruction, channel);
+          instruction = findOffice(sendText);
           break;
       }
-      if (!Number.isNaN(Number(text)))
-        resolve(square(this.rtm, text, channel));
+      if (!Number.isNaN(Number(sendText)))
+        resolve(square(this.rtm, sendText, channel));
       else if (instruction === 'undefined') reject();
       else resolve(instruction);
     });
