@@ -1,6 +1,13 @@
-const greeting = function (rtm, channel) {
-  console.log('Greeting Here');
-  return rtm.sendMessage('Hello?', channel);
+const greeting = () => {
+  const greetings = [
+    "Hi. We're here to help",
+    'Good to see you!',
+    'Hi',
+  ];
+  const randomValue = Math.floor(
+    Math.random() * greetings.length
+  );
+  return greetings[randomValue];
 };
 
 module.exports = greeting;
