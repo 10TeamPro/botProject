@@ -3,8 +3,7 @@ name: feature test
 on:
   pull_request:
     branches: [ develop ]
-    paths:
-      - "src/**"
+
 jobs:
   build:
   
@@ -24,7 +23,8 @@ jobs:
    
     - name: npm install, build and test
       run: |
-        npm ci
+        npm install mocha -g
+        npm i chai --save-dev
         mocha
       
       env:
