@@ -1,5 +1,5 @@
 ---
-name: ":beetle:BUG"
+name: BUG
 about: BUG 발생시 작성해주세요
 title: "[BUG]"
 labels: bug
@@ -14,8 +14,8 @@ assignees: ''
 설명을 작성해주세요.
 
 ## ToDo
-[ ] todo
-[ ] todo
+- [ ] todo
+- [ ] todo
 
 ## ETC
 기타사항
