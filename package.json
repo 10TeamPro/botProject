@@ -2,6 +2,8 @@
   "dependencies": {
     "@babel/register": "^7.18.9",
     "@slack/rtm-api": "^6.0.0",
+    "axios": "^1.2.0",
+    "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
     "sinon": "^14.0.2"
   },

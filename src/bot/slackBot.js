@@ -1,49 +1,58 @@
+const { Bot } = require('./bot');
+const PRIVATE_CHANNEL = require('../../rsc/config/bot.json').TEST_CHANNEL;
+
 const greeting = require('../greeting');
-const square = require('../square');
 const schedule = require('../schedule');
 const menu = require('../menu');
-const { Bot } = require('./bot');
 const findOffice = require('../findOffice');
 
+const requestDate =
+  '| 안내 받을 날짜를 입력해주세요 \n' +
+  '| 형식 : 월/일 (12/13)';
+
 class SlackBot extends Bot {
-  /** 멤버들의 id를 담을 hashset */
+  /** User ID Set */
   #userHash = new Set();
 
+  /** 채널 별로 응답상황을 인지
+   * @Key : Channel Hash ID
+   * @Value : response Level on Channel
+   * */
+  #channelMap = new Map();
+
   /** 유저가 봇이 존재하는 채널에서 처음 타이핑을 시작할 때 봇은 가이드를 줍니다. */
-  hiAndInfo() {
+  async hiAndInfo() {
     this.rtm.on('user_typing', async (event) => {
-      if (this.#userHash.has(event.user)) {
+      const { user, channel } = event;
+
+      if (!this.#channelMap.has(channel)) {
+        this.#channelMap.set(channel, 1);
+      }
+      if (this.#userHash.has(user) || channel === PRIVATE_CHANNEL) {
         return;
       }
-      const stringFormat = `     안녕하세요? <@${event.user}>님\n
-       아래 메시지를 입력하시면 응답 가능합니다.\n
-      |                 hi\n 
-      |               학사일정\n
-      |             오늘 밥 뭐야\n 
-      |              (전공)학부 \n`;
-      this.#userHash.add(event.user);
+      const stringFormat = `안녕하세요? <@${user}>님\n
+    아래 메시지를 입력하시면 응답 가능합니다.\n
+    |                 hi\n 
+    |               학사일정\n
+    |             오늘 밥 뭐야\n 
+    |              전공 (영어로 입력 바랍니다.) \n`;
+      this.#userHash.add(user);
       await this.rtm.sendMessage(
         stringFormat,
-        event.channel
+        channel
       );
     });
   }
 
   listen() {
-    // rtm.sendMessage()도 promise 반환하므로 async로 전환했습니다.
     this.rtm.on('message', async (message) => {
       const { channel, text } = message;
 
+      this.responseLevel = this.#channelMap.get(channel);
       try {
-        if (this.responseLevel === 1) {
-          await this.send(text, channel);
-        } else if (this.responseLevel === 2) {
-          const result = schedule(text);
-          await this.rtm.sendMessage(result.msg, channel);
-          if (result.success) {
-            this.responseLevel = 1;
-          }
-        }
+        const msg = await this.send(text, channel);
+        await this.rtm.sendMessage(msg, channel);
       } catch (e) {
         console.log(e);
       }
@@ -52,49 +61,41 @@ class SlackBot extends Bot {
 
   /** 문자열 분석 후 그룹지어 봇이 어떤 작업을 할지 전달합니다. */
   send(text, channel) {
-    return new Promise((resolve, reject) => {
-      let instruction;
-      let sendText = text;
 
-      const checkENG = /[a-zA-Z]/;
+    let sendMsg;
 
-      if (checkENG.test(sendText)) {
-        sendText = { ...sendText.toLowerCase() };
+    switch (this.responseLevel) {
+      case 1:
+        switch (text) {
+          case 'hi':
+            sendMsg = greeting();
+            break;
+          case '학사일정':
+            sendMsg = requestDate;
+            this.#channelMap.set(channel, 2);
+            break;
+          case '오늘 밥 뭐야':
+            sendMsg = menu(this.rtm, new Date().getDay(), channel);
+            break;
+          default:
+            sendMsg = findOffice(text);
+            break;
+        }
+        break;
+      case 2: {
+        const temp = schedule(text);
+        sendMsg = temp.success ? temp.msg : 'INPUT ERROR';
+        this.#channelMap.set(channel, temp.success ? 1 : 2);
+        break;
       }
+      default:
+        sendMsg = 'error';
+        console.assert(this.responseLevel < 3, 'response level should less than 3');
+        break;
 
-      switch (sendText) {
-        case 'hi':
-          instruction = greeting();
-          break;
-        case '학사일정':
-          // TODO: feature 2
-          instruction = this.requestDate(channel);
-          this.responseLevel += 1;
-          break;
-        case '오늘 밥 뭐야':
-          // TODO: feature 3
-          instruction = menu(
-            this.rtm,
-            new Date().getDay(),
-            channel
-          );
-          break;
-        default:
-          instruction = findOffice(sendText);
-          break;
-      }
-      if (!Number.isNaN(Number(sendText)))
-        resolve(square(this.rtm, sendText, channel));
-      else if (instruction === 'undefined') reject();
-      else resolve(instruction);
-    });
-  }
+    }
+    return sendMsg;
 
-  requestDate(channel) {
-    const stringFormat =
-      '| 안내 받을 날짜를 입력해주세요 \n' +
-      '| 형식 : 월/일 (12/13)';
-    return this.rtm.sendMessage(stringFormat, channel);
   }
 }
 
