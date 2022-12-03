@@ -10,6 +10,10 @@ const requestDate =
   '| 안내 받을 날짜를 입력해주세요 \n' +
   '| 형식 : 월/일 (12/13)';
 
+const requestDept =
+  '| 학과 이름을 입력해주세요 \n' +
+  '| (⨂ 영문입력 바람)';
+
 class SlackBot extends Bot {
   /** User ID Set */
   #userHash = new Set();
@@ -36,7 +40,8 @@ class SlackBot extends Bot {
     |                 hi\n 
     |               학사일정\n
     |             오늘 밥 뭐야\n 
-    |              전공 (영어로 입력 바랍니다.) \n`;
+    |             이번주 식단\n 
+    |              학과 사무실 안내 \n`;
       this.#userHash.add(user);
       await this.rtm.sendMessage(
         stringFormat,
@@ -77,6 +82,13 @@ class SlackBot extends Bot {
           case '오늘 밥 뭐야':
             sendMsg = menu(this.rtm, new Date().getDay(), channel);
             break;
+          case '이번 주 식단':
+            /** @TODO 구현 */
+            break;
+          case '학과 사무실 안내':
+            sendMsg = requestDept;
+            this.#channelMap.set(channel, 3);
+            break;
           default:
             sendMsg = findOffice(text);
             break;
@@ -86,6 +98,13 @@ class SlackBot extends Bot {
         const temp = schedule(text);
         sendMsg = temp.success ? temp.msg : 'INPUT ERROR';
         this.#channelMap.set(channel, temp.success ? 1 : 2);
+        break;
+      }
+      case 3: {
+        const temp = findOffice(text);
+        /** @todo 이부분에 성공했는지 여부 확인 후 성공시 1로 돌아가고 아니면 루프 */
+        // sendMsg = temp.success ? temp.msg : 'INPUT ERROR';
+        this.#channelMap.set(channel, temp.success ? 1 : 3);
         break;
       }
       default:
