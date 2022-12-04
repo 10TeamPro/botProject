@@ -1,18 +1,19 @@
 const { Bot } = require('./bot');
-const PRIVATE_CHANNEL = require('../../rsc/config/bot.json').TEST_CHANNEL;
+const PRIVATE_CHANNEL =
+  require('../../rsc/config/bot.json').TEST_CHANNEL;
 
 const greeting = require('../greeting');
 const schedule = require('../schedule');
 const menu = require('../menu');
 const findOffice = require('../findOffice');
+const evaluation = require('../evaluation');
+const evaluationWeek = require('../evaluationWeek');
 
 const requestDate =
   '| 안내 받을 날짜를 입력해주세요 \n' +
   '| 형식 : 월/일 (12/13)';
 
-const requestDept =
-  '| 학과 이름을 입력해주세요 \n' +
-  '| (⨂ 영문입력 바람)';
+const requestDept = `| 학과 이름을 입력해주세요 \n| (⨂ 영문입력 바람)`;
 
 class SlackBot extends Bot {
   /** User ID Set */
@@ -32,7 +33,10 @@ class SlackBot extends Bot {
       if (!this.#channelMap.has(channel)) {
         this.#channelMap.set(channel, 1);
       }
-      if (this.#userHash.has(user) || channel === PRIVATE_CHANNEL) {
+      if (
+        this.#userHash.has(user) ||
+        channel === PRIVATE_CHANNEL
+      ) {
         return;
       }
       const stringFormat = `안녕하세요? <@${user}>님\n
@@ -40,13 +44,10 @@ class SlackBot extends Bot {
     |                 hi\n 
     |               학사일정\n
     |             오늘 밥 뭐야\n 
-    |             이번주 식단\n 
+    |             이번 주 식단\n 
     |              학과 사무실 안내 \n`;
       this.#userHash.add(user);
-      await this.rtm.sendMessage(
-        stringFormat,
-        channel
-      );
+      await this.rtm.sendMessage(stringFormat, channel);
     });
   }
 
@@ -66,7 +67,6 @@ class SlackBot extends Bot {
 
   /** 문자열 분석 후 그룹지어 봇이 어떤 작업을 할지 전달합니다. */
   send(text, channel) {
-
     let sendMsg;
 
     switch (this.responseLevel) {
@@ -80,10 +80,20 @@ class SlackBot extends Bot {
             this.#channelMap.set(channel, 2);
             break;
           case '오늘 밥 뭐야':
-            sendMsg = menu(this.rtm, new Date().getDay(), channel);
+            sendMsg = menu(
+              this.rtm,
+              new Date().getDay(),
+              channel
+            );
+            if (sendMsg == null) sendMsg = evaluation();
             break;
           case '이번 주 식단':
-            /** @TODO 구현 */
+            sendMsg = menu(
+              this.rtm,
+              new Date().getDay(),
+              channel
+            );
+            if (sendMsg == null) sendMsg = evaluationWeek();
             break;
           case '학과 사무실 안내':
             sendMsg = requestDept;
@@ -109,12 +119,13 @@ class SlackBot extends Bot {
       }
       default:
         sendMsg = 'error';
-        console.assert(this.responseLevel < 3, 'response level should less than 3');
+        console.assert(
+          this.responseLevel < 3,
+          'response level should less than 3'
+        );
         break;
-
     }
     return sendMsg;
-
   }
 }
 
