@@ -12,8 +12,10 @@ function findOffice(department) {
 
   /* 입력으로 들어온 학과의 사무실을 찾았을 경우 */
   dataInput.forEach((element) => {
-    if (element.includes(department)) {
-      buffer = element.split('-');
+    buffer = element.split('-');
+    const buffer2 = buffer[0].replace(/ /gi, '');
+    const buffer3 = department.replace(/ /gi, '');
+    if (buffer2.toLowerCase() === buffer3.toLowerCase()) {
       office = buffer[1].trim();
     }
   });
