@@ -1,6 +1,5 @@
 const { Bot } = require('./bot');
-const PRIVATE_CHANNEL =
-  require('../../rsc/config/bot.json').TEST_CHANNEL;
+// const { TEST_CHANNEL } = require('../../rsc/config/bot.json');
 
 const greeting = require('../greeting');
 const schedule = require('../schedule');
@@ -15,9 +14,56 @@ const requestDate =
 
 const requestDept = `| 학과 이름을 입력해주세요 \n| (⨂ 영문입력 바람)`;
 
+const guideText = {
+  'blocks': [
+    {
+      "type": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "아래 메시지를 입력하시면 응답 가능합니다."
+      }
+    },
+    {
+      "type": "divider"
+    },
+    {
+      'type': 'section',
+      'text': {
+        'type': 'mrkdwn',
+        'text': ' *hi*\n' +
+          ' *학사일정*\n' +
+          ' *오늘 밥 뭐야*\n' +
+          ' *이번 주 식단 <https://sobi.chonbuk.ac.kr/menu/week_menu.php|(전북대학교 생활협동조합)>*\n' +
+          ' *학과사무실안내*'
+      },
+      'accessory': {
+        'type': 'image',
+        'image_url': 'https://upload.wikimedia.org/wikipedia/ko/thumb/e/e2/JBNU_Emblem.svg/1200px-JBNU_Emblem.svg.png',
+        'alt_text': 'plane'
+      }
+    },
+    {
+      'type': 'section',
+      'text':{
+        'type': 'mrkdwn',
+        'text':
+          'Architectural Engineering\n' +
+          ' Mechanical Engineering\n' +
+          ' Urban Engineering\n' +
+          'Electronic Engineering\n' +
+          ' Computer Science and Engineering\n' +
+          ' Chemical Engineering\n' +
+          'Accounting\n' +
+          ' International Trade Korean Language and Literature\n' +
+          ' Library and Information Science'
+      }
+    }
+  ]
+};
+
 class SlackBot extends Bot {
   /** User ID Set */
-  #userHash = new Set();
+  // #userHash = new Set();
 
   /** 채널 별로 응답상황을 인지
    * @Key : Channel Hash ID
@@ -25,45 +71,38 @@ class SlackBot extends Bot {
    * */
   #channelMap = new Map();
 
-  /** 유저가 봇이 존재하는 채널에서 처음 타이핑을 시작할 때 봇은 가이드를 줍니다. */
-  async hiAndInfo() {
-    this.rtm.on('user_typing', async (event) => {
-      const { user, channel } = event;
+  async start() {
+    await super.start();
+    await this.hint();
+    await this.listen();
+  }
 
-      if (!this.#channelMap.has(channel)) {
-        this.#channelMap.set(channel, 1);
-      }
-      if (
-        this.#userHash.has(user) ||
-        channel === PRIVATE_CHANNEL
-      ) {
-        return;
-      }
-      const stringFormat = `안녕하세요? <@${user}>님\n
-    아래 메시지를 입력하시면 응답 가능합니다.\n
-    |                 hi\n 
-    |               학사일정\n
-    |             오늘 밥 뭐야\n 
-    |             이번 주 식단\n 
-    |              학과 사무실 안내 \n`;
-      this.#userHash.add(user);
-      await this.rtm.sendMessage(stringFormat, channel);
-    });
+  checkChannel(channel) {
+    if (!this.#channelMap.has(channel)) {
+      this.#channelMap.set(channel, 1);
+    }
+    this.responseLevel = this.#channelMap.get(channel);
   }
 
   listen() {
-    this.rtm.on('message', async (message) => {
-      const { channel, text } = message;
-      if (!this.#channelMap.has(channel)) {
-        this.#channelMap.set(channel, 1);
-      }
-      this.responseLevel = this.#channelMap.get(channel);
+
+    this.app.message(async ({ event, say }) => {
+      const { channel, text } = event;
+
+      this.checkChannel(channel);
       try {
         const msg = await this.send(text, channel);
-        await this.rtm.sendMessage(msg, channel);
+        await say(msg);
       } catch (e) {
         console.log(e);
       }
+    });
+  }
+
+  hint() {
+    this.app.command('/hint', async ({ ack, say }) => {
+      await ack();
+      await say(guideText);
     });
   }
 
@@ -83,7 +122,7 @@ class SlackBot extends Bot {
             break;
           case '오늘 밥 뭐야':
             sendMsg = menu(
-              this.rtm,
+              this.app,
               new Date().getDay(),
               channel
             );
@@ -91,7 +130,7 @@ class SlackBot extends Bot {
             break;
           case '이번 주 식단':
             sendMsg = menu(
-              this.rtm,
+              this.app,
               new Date().getDay(),
               channel
             );

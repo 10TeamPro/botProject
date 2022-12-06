@@ -1,25 +1,31 @@
 // const fs = require('fs');
 
-const { RTMClient, LogLevel } = require('@slack/rtm-api');
+const { App } = require('@slack/bolt');
 
 class Bot {
   /** rtm 개체 */
-  rtm;
+  app;
 
   /** 응답 가능한 단계 */
   responseLevel;
 
-  constructor(token) {
-    this.rtm = null;
+  constructor(_token, _signingSecret, _appToken) {
+    this.app = null;
     this.responseLevel = 1;
-    this.rtm = new RTMClient(token, { logLevel: LogLevel.INFO });
+    this.app = new App(
+      {
+        token: _token,
+        signingSecret: _signingSecret,
+        socketMode: true,
+        appToken: _appToken
+      }
+    );
   }
 
   /** 모니터링 시작 */
   async start() {
-    await this.rtm.start(); // start 메서드는 promise를 반환하므로 async로 전환했습니다.
-
-    console.log(`${Date().substring(4, 25)}  RUNNING....`);
+    await this.app.start();
+    console.log("⚡️ Bolt app is running!");
   }
 }
 
