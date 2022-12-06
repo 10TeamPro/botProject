@@ -21,7 +21,7 @@ const locationInfo = [
 describe('학과 사무실 찾기 테스트', () => {
   it('sayOffice should return departmentOffice', () => {
     locationInfo.forEach((element) => {
-      assert.equal(findOffice(element.department), element.office);
+      assert.equal(findOffice(element.department).msg, element.office);
     });
   });
 });
