@@ -12,6 +12,7 @@ function findOffice(department) {
   let min = 100;
   let office = 'undefined';
   let realDepart = 'undefined';
+  let lowDept = 'undefined';
   let buffer = '';
 
   dataInput.forEach((element) => {
@@ -27,8 +28,9 @@ function findOffice(department) {
     }
     // 입력과 일치하는 이름이 없을 경우 비슷한 이름 탐색
     else {
+      lowDept = department.toLowerCase();
       trimmedDept.forEach((word) => {
-        distance = levenshtein.get(department, word);
+        distance = levenshtein.get(lowDept, word);
         if (distance < min && word !== 'and') {
           min = distance;
           realDepart = buffer[0].trim();
