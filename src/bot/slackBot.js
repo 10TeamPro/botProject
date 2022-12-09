@@ -1,5 +1,4 @@
 const { Bot } = require('./bot');
-// const { TEST_CHANNEL } = require('../../rsc/config/bot.json');
 
 const greeting = require('../greeting');
 const schedule = require('../schedule');
@@ -12,28 +11,129 @@ const requestDate =
   '| 안내 받을 날짜를 입력해주세요 \n' +
   '| 형식 : 월/일 (12/13)';
 
-const requestDept = `| 학과 이름을 입력해주세요 \n| (⨂ 영문입력 바람)`;
+const departmentBlock = {
+  'blocks': [
+    {
+      'type': 'section',
+      'block_id': 'slack_dept_section',
+      'text': {
+        'type': 'mrkdwn',
+        'text': '학과 리스트'
+      },
+      'accessory': {
+        'action_id': 'slack_dept_list',
+        'type': 'static_select',
+        'placeholder': {
+          'type': 'plain_text',
+          'text': '학과 리스트'
+        },
+        'options': [
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Architectural Engineering'
+            },
+            'value': 'Architectural Engineering'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Mechanical Engineering'
+            },
+            'value': 'Mechanical Engineering'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Urban Engineering'
+            },
+            'value': 'Urban Engineering'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Electronic Engineering'
+            },
+            'value': 'Electronic Engineering'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Computer Science and Engineering'
+            },
+            'value': 'Computer Science and Engineering'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Chemical Engineering'
+            },
+            'value': 'Chemical Engineering'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Accounting'
+            },
+            'value': 'Accounting'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'International Trade'
+            },
+            'value': 'International Trade'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Korean Language and Literature'
+            },
+            'value': 'Korean Language and Literature'
+          },
+          {
+            'text': {
+              'type': 'plain_text',
+              'text': 'Library and Information Science'
+            },
+            'value': 'Library and Information Science'
+          }
+        ]
+      }
+    },
+    {
+      'type': 'section',
+      'text': {
+        'type': 'mrkdwn',
+        'text': `| 학과 이름을 입력해주세요 | (영문입력 바람)`
+      }
+    },
+    {
+      'type': 'divider'
+    }
+  ]
+};
 
 const guideText = {
   'blocks': [
     {
-      "type": "header",
-      "text": {
-        "type": "plain_text",
-        "text": "아래 메시지를 입력하시면 응답 가능합니다."
+      'type': 'header',
+      'text': {
+        'type': 'plain_text',
+        'text': '아래 메시지를 입력하시면 응답 가능합니다.'
       }
     },
     {
-      "type": "divider"
+      'type': 'divider'
     },
     {
       'type': 'section',
       'text': {
         'type': 'mrkdwn',
         'text': ' *hi*\n' +
-          ' *학사일정*\n' +
+          ' *<https://cse.jbnu.ac.kr/cse/3576/subview.do|학사일정>*\n' +
           ' *오늘 밥 뭐야*\n' +
-          ' *이번 주 식단 <https://sobi.chonbuk.ac.kr/menu/week_menu.php|(전북대학교 생활협동조합)>*\n' +
+          ' *<https://sobi.chonbuk.ac.kr/menu/week_menu.php|이번 주 식단>*\n' +
           ' *학과사무실안내*'
       },
       'accessory': {
@@ -42,29 +142,11 @@ const guideText = {
         'alt_text': 'plane'
       }
     },
-    {
-      'type': 'section',
-      'text':{
-        'type': 'mrkdwn',
-        'text':
-          'Architectural Engineering\n' +
-          ' Mechanical Engineering\n' +
-          ' Urban Engineering\n' +
-          'Electronic Engineering\n' +
-          ' Computer Science and Engineering\n' +
-          ' Chemical Engineering\n' +
-          'Accounting\n' +
-          ' International Trade Korean Language and Literature\n' +
-          ' Library and Information Science'
-      }
-    }
+    departmentBlock.blocks[0]
   ]
 };
 
 class SlackBot extends Bot {
-  /** User ID Set */
-  // #userHash = new Set();
-
   /** 채널 별로 응답상황을 인지
    * @Key : Channel Hash ID
    * @Value : response Level on Channel
@@ -84,6 +166,7 @@ class SlackBot extends Bot {
     this.responseLevel = this.#channelMap.get(channel);
   }
 
+  /** @description 다른 유저로부터 메시지 감지시에 발생하는 이벤트 정의 */
   listen() {
 
     this.app.message(async ({ event, say }) => {
@@ -99,10 +182,19 @@ class SlackBot extends Bot {
     });
   }
 
+  /** @description 메시지 창에서 /hint 입력시 발생하는 이벤트 정의 */
   hint() {
-    this.app.command('/hint', async ({ ack, say }) => {
+    this.app.command('/hint', async ({ ack, say}) => {
       await ack();
       await say(guideText);
+    });
+
+    this.app.action('slack_dept_list', async ({ action, ack, say,  body }) => {
+      await ack();
+
+      const result = this.getResult(action.selected_option.value, body.container.channel_id);
+
+      await say(result);
     });
   }
 
@@ -110,9 +202,11 @@ class SlackBot extends Bot {
   send(text, channel) {
     let sendMsg;
 
+    const trimmedText = text.replace(/ /gi, '');
+
     switch (this.responseLevel) {
       case 1:
-        switch (text) {
+        switch (trimmedText) {
           case 'hi':
             sendMsg = greeting();
             break;
@@ -120,7 +214,7 @@ class SlackBot extends Bot {
             sendMsg = requestDate;
             this.#channelMap.set(channel, 2);
             break;
-          case '오늘 밥 뭐야':
+          case '오늘밥뭐야':
             sendMsg = menu(
               this.app,
               new Date().getDay(),
@@ -128,7 +222,7 @@ class SlackBot extends Bot {
             );
             if (sendMsg == null) sendMsg = evaluation();
             break;
-          case '이번 주 식단':
+          case '이번주식단':
             sendMsg = menu(
               this.app,
               new Date().getDay(),
@@ -136,8 +230,8 @@ class SlackBot extends Bot {
             );
             if (sendMsg == null) sendMsg = evaluationWeek();
             break;
-          case '학과 사무실 안내':
-            sendMsg = requestDept;
+          case '학과사무실안내':
+            sendMsg = departmentBlock;
             this.#channelMap.set(channel, 3);
             break;
           default:
@@ -145,15 +239,11 @@ class SlackBot extends Bot {
         }
         break;
       case 2: {
-        const temp = schedule(text);
-        sendMsg = temp.msg;
-        this.#channelMap.set(channel, temp.success ? 1 : 2);
+        sendMsg = this.getResult(schedule, trimmedText, channel);
         break;
       }
       case 3: {
-        const temp = findOffice(text);
-        sendMsg = temp.msg;
-        this.#channelMap.set(channel, temp.success ? 1 : 3);
+        sendMsg = this.getResult(findOffice(), trimmedText, channel);
         break;
       }
       default:
@@ -165,6 +255,15 @@ class SlackBot extends Bot {
         break;
     }
     return sendMsg;
+  }
+
+  getResult(func, text, channel){
+    const result = func(text);
+
+    if (result.success) {
+      this.#channelMap.set(channel, 1);
+    }
+    return result.msg;
   }
 }
 
