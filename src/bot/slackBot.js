@@ -192,7 +192,7 @@ class SlackBot extends Bot {
     this.app.action('slack_dept_list', async ({ action, ack, say,  body }) => {
       await ack();
 
-      const result = this.getResult(action.selected_option.value, body.container.channel_id);
+      const result = this.getResult(findOffice,action.selected_option.value, body.container.channel_id);
 
       await say(result);
     });
@@ -205,6 +205,7 @@ class SlackBot extends Bot {
     const trimmedText = text.replace(/ /gi, '');
 
     switch (this.responseLevel) {
+
       case 1:
         switch (trimmedText) {
           case 'hi':
@@ -243,7 +244,7 @@ class SlackBot extends Bot {
         break;
       }
       case 3: {
-        sendMsg = this.getResult(findOffice(), trimmedText, channel);
+        sendMsg = this.getResult(findOffice, trimmedText, channel);
         break;
       }
       default:
