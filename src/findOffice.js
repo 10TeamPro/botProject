@@ -12,7 +12,7 @@ function findOffice(department) {
   let min = 100;
   let office = 'undefined';
   let realDepart = 'undefined';
-  let lowDept = 'undefined';
+  let rawData = [];
   let result = '학과 이름을 올바르게 입력해주세요.';
   let data = '';
 
@@ -20,7 +20,13 @@ function findOffice(department) {
 
   dataInput.forEach((element) => {
     data = element.split('-');
+    rawData = data[0].split('-');
     const trimmedData = data[0].replace(/ /gi, '');
+    distance = levenshtein.get(
+      department.replace(/ /gi, '').toLowerCase(),
+      trimmedData.toLowerCase()
+    );
+
     // 입력으로 들어온 학과의 사무실을 찾았을 경우
     if (
       trimmedData.toLowerCase() ===
@@ -28,20 +34,23 @@ function findOffice(department) {
     ) {
       result = data[1].trim();
     }
+
     // 입력과 일치하는 이름이 없을 경우 비슷한 이름 탐색
-    else {
-      lowDept = department.toLowerCase();
-      trimmedData.forEach((word) => {
-        distance = levenshtein.get(lowDept, word);
+    else if (distance < 6) {
+      realDepart = data[0].trim();
+      office = data[1].trim();
+    } else {
+      rawData.forEach((word) => {
+        distance = levenshtein.get(department, word);
         if (distance < min && word !== 'and') {
           min = distance;
           realDepart = data[0].trim();
           office = data[1].trim();
         }
       });
-
-      office = `${realDepart}를 말씀하시는건가요? ${office} 입니다.`;
     }
+
+    result = `${realDepart}을 말씀하시는건가요? ${office} 입니다.`;
   });
 
   return {
