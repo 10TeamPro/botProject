@@ -9,7 +9,6 @@ const dataInput = fs
 /* 파일에서 학과의 사무실 위치 탐색 */
 function findOffice(department) {
   let distance = 0;
-  let min = 100;
   let office = 'undefined';
   let realDepart = 'undefined';
   let rawData = [];
@@ -22,52 +21,38 @@ function findOffice(department) {
   dataInput.some((element) => {
 
     data = element.split('-');
-    rawData = data[0].split('-');
-    const trimmedData = data[0].replace(/ /gi,  '');
-    distance = levenshtein.get(
-     trimmedInput.toLowerCase(),
-      trimmedData.toLowerCase()
-    );
- //   console.log(` CASE ${trimmedInput}         ${distance}`);
+    const trimmedData = data[0].replace(/ /gi, '');
+    rawData = trimmedData.substring(0, trimmedInput.length);
 
+    distance = levenshtein.get(trimmedInput.toLowerCase(), trimmedData.toLowerCase());
+    const distanceType2 = levenshtein.get(trimmedInput.toLowerCase(), rawData.toLowerCase());
 
-    // 입력으로 들어온 학과의 사무실을 찾았을 경우
-    if (
-      trimmedData.toLowerCase() ===
-      trimmedInput.toLowerCase()
-    ) {
+    if (trimmedData.toLowerCase() === trimmedInput.toLowerCase()) {
       result = data[1].trim();
-
-
-      return {
-        mag: result,
-        success: true
-      }
+      return true;
     }
-    // 입력과 일치하는 이름이 없을 경우 비슷한 이름 탐색
-    if (distance < 15) {
+
+    if (distance < 6) {
       realDepart = data[0].trim();
       office = data[1].trim();
-    } else {
-      rawData.forEach((word) => {
-        distance = levenshtein.get(department, word);
-        if (distance < min && word !== 'and') {
-          min = distance;
-          realDepart = data[0].trim();
-          office = data[1].trim();
-        }
-      });
       result = `${realDepart}을 말씀하시는건가요? ${office} 입니다.`;
+      return true;
     }
-    
-  return false;
-   });
+    if (distanceType2 < 4) {
+      console.log('OK');
 
+      result = `${data[0]}을 말씀하시는건가요? ${data[1]} 입니다.`;
+      return true;
+    }
+    return false;
+  });
+
+  console.log('HELLO');
   return {
     msg: result,
-    success:
-      result !== '학과 이름을 올바르게 입력해주세요.',
+    success: result !== '학과 이름을 올바르게 입력해주세요.'
   };
+
 }
 
 module.exports = findOffice;
