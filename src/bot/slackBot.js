@@ -54,7 +54,9 @@ class SlackBot extends Bot {
   listen() {
     this.rtm.on('message', async (message) => {
       const { channel, text } = message;
-
+      if (!this.#channelMap.has(channel)) {
+        this.#channelMap.set(channel, 1);
+      }
       this.responseLevel = this.#channelMap.get(channel);
       try {
         const msg = await this.send(text, channel);
@@ -100,20 +102,18 @@ class SlackBot extends Bot {
             this.#channelMap.set(channel, 3);
             break;
           default:
-            sendMsg = findOffice(text);
             break;
         }
         break;
       case 2: {
         const temp = schedule(text);
-        sendMsg = temp.success ? temp.msg : 'INPUT ERROR';
+        sendMsg = temp.msg;
         this.#channelMap.set(channel, temp.success ? 1 : 2);
         break;
       }
       case 3: {
         const temp = findOffice(text);
-        /** @todo 이부분에 성공했는지 여부 확인 후 성공시 1로 돌아가고 아니면 루프 */
-        // sendMsg = temp.success ? temp.msg : 'INPUT ERROR';
+        sendMsg = temp.msg;
         this.#channelMap.set(channel, temp.success ? 1 : 3);
         break;
       }
