@@ -18,14 +18,18 @@ function findOffice(department) {
 
   const trimmedInput = department.replace(/ /gi, '');
 
-  dataInput.forEach((element) => {
+  // eslint-disable-next-line array-callback-return
+  dataInput.some((element) => {
+
     data = element.split('-');
     rawData = data[0].split('-');
-    const trimmedData = data[0].replace(/ /gi, '');
+    const trimmedData = data[0].replace(/ /gi,  '');
     distance = levenshtein.get(
-      department.replace(/ /gi, '').toLowerCase(),
+     trimmedInput.toLowerCase(),
       trimmedData.toLowerCase()
     );
+ //   console.log(` CASE ${trimmedInput}         ${distance}`);
+
 
     // 입력으로 들어온 학과의 사무실을 찾았을 경우
     if (
@@ -33,10 +37,15 @@ function findOffice(department) {
       trimmedInput.toLowerCase()
     ) {
       result = data[1].trim();
-    }
 
+
+      return {
+        mag: result,
+        success: true
+      }
+    }
     // 입력과 일치하는 이름이 없을 경우 비슷한 이름 탐색
-    else if (distance < 6) {
+    if (distance < 15) {
       realDepart = data[0].trim();
       office = data[1].trim();
     } else {
@@ -48,10 +57,11 @@ function findOffice(department) {
           office = data[1].trim();
         }
       });
+      result = `${realDepart}을 말씀하시는건가요? ${office} 입니다.`;
     }
-
-    result = `${realDepart}을 말씀하시는건가요? ${office} 입니다.`;
-  });
+    
+  return false;
+   });
 
   return {
     msg: result,
