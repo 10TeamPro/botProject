@@ -8,11 +8,21 @@ const dataInput = fs
 
 /* 파일에서 학과의 사무실 위치 탐색 */
 function findOffice(department) {
+  let result = '학과 이름을 올바르게 입력해주세요.';
+
+
+  if (department.length < 4)
+  {
+    return {
+      msg: result,
+      success: false
+    }
+  }
+
   let distance = 0;
   let office = 'undefined';
   let realDepart = 'undefined';
   let rawData = [];
-  let result = '학과 이름을 올바르게 입력해주세요.';
   let data = '';
 
   const trimmedInput = department.replace(/ /gi, '');
@@ -31,23 +41,19 @@ function findOffice(department) {
       result = data[1].trim();
       return true;
     }
-
-    if (distance < 6) {
+    if (distance < 4) {
       realDepart = data[0].trim();
       office = data[1].trim();
       result = `${realDepart}을 말씀하시는건가요? ${office} 입니다.`;
       return true;
     }
-    if (distanceType2 < 4) {
-      console.log('OK');
-
+    if (distanceType2 < 3) {
       result = `${data[0]}을 말씀하시는건가요? ${data[1]} 입니다.`;
       return true;
     }
     return false;
   });
 
-  console.log('HELLO');
   return {
     msg: result,
     success: result !== '학과 이름을 올바르게 입력해주세요.'
