@@ -1,0 +1,22 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches: [ main ]
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+        
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            whoami
+            git clone https://github.com/10TeamPro/botProject.git || (cd ./botProject && git config --global user.email "selleeeggl@gmail.com" && git config --global user.name "MscMin" && git pull origin main)

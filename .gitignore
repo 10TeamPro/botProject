@@ -3,3 +3,6 @@ node_modules/
 
 # 토큰(config)
 config/
+
+# 리소스 파일(resource)
+rsc/
