@@ -4,8 +4,6 @@ const greeting = require('../greeting');
 const schedule = require('../schedule');
 const menu = require('../menu');
 const findOffice = require('../findOffice');
-const evaluation = require('../evaluation');
-const evaluationWeek = require('../evaluationWeek');
 
 const requestDate =
   '| 안내 받을 날짜를 입력해주세요 \n' +
@@ -216,20 +214,8 @@ class SlackBot extends Bot {
             this.#channelMap.set(channel, 2);
             break;
           case '오늘밥뭐야':
-            sendMsg = menu(
-              this.app,
-              new Date().getDay(),
-              channel
-            );
-            if (sendMsg == null) sendMsg = evaluation();
-            break;
           case '이번주식단':
-            sendMsg = menu(
-              this.app,
-              new Date().getDay(),
-              channel
-            );
-            if (sendMsg == null) sendMsg = evaluationWeek();
+            sendMsg = menu(new Date().getDay(), trimmedText);
             break;
           case '학과사무실안내':
             sendMsg = departmentBlock;

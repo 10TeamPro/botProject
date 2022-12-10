@@ -1,5 +1,3 @@
-// const fs = require('fs');
-
 const { App } = require('@slack/bolt');
 
 class Bot {
