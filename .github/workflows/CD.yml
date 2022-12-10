@@ -3,27 +3,20 @@ name: Deploy
 on:
   push:
     branches: [ main ]
-    
+
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [ 16.x, 18.x ]
-        
     steps:
-      - uses: actions/checkout@v1
-      - name: User Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        
+      - name: Deploy
+        uses: appleboy/ssh-action@master
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: npm install
-        run: npm i
-      - name: Build install
-        run: npm run build
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          publish_dir: ./build
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            whoami
+            git clone https://github.com/10TeamPro/botProject.git || (cd ./botProject && git config --global user.email "selleeeggl@gmail.com" && git config --global user.name "MscMin" && git pull origin main)
