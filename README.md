@@ -126,6 +126,13 @@ Need to know information about JBNU while working on a team project with Slack ?
   ```bash
   node src/main.js
   ```
+- also, use slash command 
+
+hint
+
+![image](https://user-images.githubusercontent.com/83587015/206868528-2592f927-ad3d-467a-bee0-146d7a54997b.png)
+![image](https://user-images.githubusercontent.com/83587015/206868542-53c87e9b-fe10-4d38-8543-cc255cb5c5b1.png)
+
 
 ![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png)
 
@@ -134,6 +141,10 @@ Need to know information about JBNU while working on a team project with Slack ?
 If you find some errors or needs improvement
 Please PR according to the suggested eslint and prettier
 ( related commit rules are specified in [Notion](<[https://www.notion.so/ae66f937dda740eab1689d22e6f8dae1](https://www.notion.so/ae66f937dda740eab1689d22e6f8dae1)>) )
+
+<a href="https://github.com/10TeamPro/botProject/blob/develop/README_ko.md">
+Contributing
+</a>
 
 Always welcome
 
