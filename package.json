@@ -11,7 +11,7 @@
   "devDependencies": {
     "chai": "^4.3.7",
     "eslint-config-cryingbot": "^1.0.4",
-    "husky": "^8.0.2"
+    "husky": "^8.0.3"
   },
   "scripts": {
     "prepare": "husky install"
